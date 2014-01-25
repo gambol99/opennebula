@@ -1,8 +1,17 @@
-#
-#
-#   Author: Rohith
-#   Date: 2013-10-29 10:10:32 +0100 (Tue, 29 Oct 2013)
-#
-#  vim:ts=4:sw=4:et
-#
+
+
+============
+Opennebula
+============
+
+Contains a number of scripts / changes for a Opennebula deployed 
+
+preload.rb
+===========
+
+The default tm_ssh transport manager uses a scp <image> from controller to compute node - while the method is fine, it was SLOW, copying gigabytes across the network. The first method used to improve the performance was a local cached copy of the of the images from the controller. A simple rscync of the datastore was pushed by puppet on each of the compute nodes (/var/lib/one/cached). The tm_ssh ln / clone (/var/lib/one/remotes/tmm/tm_ssh/{clone,ln}) scripts were then changed to call preload.rb, taking the image name and performing the cp <image> /var/lib/one/datastore/0 etc .. The method once again was fine, but it still took 5/10 seconds to perform the copy (natually dependent on the underlining storage system). So the next step we a preload of the images i.e. image-name.{0..10} and use a mv image.<num> <dest> rather than copy. 
+
+The preload.rb performs the above - it has two functions; preload and clone. The preloading looks at the local cached copies of the images and makes x copies for clone to use. The clone takes the image name, looks for a matching preloaded image and moves it to the destination. Preloading uses a single atomic lock, which clone uses a flock per preload image. Note, the clone can also resizes the image if requested
+
+
 
