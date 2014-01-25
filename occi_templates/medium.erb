@@ -20,11 +20,11 @@ CONTEXT = [
 <% end %>
   HOSTNAME       = "$NAME",
   MANAGE_PUPPET  = "YES",
-  DOMAIN         = "mol.dmgt.net",
+  DOMAIN         = "MYDOMAIN",
   SELINUX        = "disabled",
-  SEARCH_PATH    = "mol.dmgt.net",
+  SEARCH_PATH    = "MYDOMAIN",
   SSH_PUBLIC_KEY = "$USER[SSH_PUBLIC_KEY]",
-  DNS            = "$NETWORK[DNS, NAME=\"mol_support\"]",
+  DNS            = "$NETWORK[DNS, NAME=\"support_net\"]",
   DISK_SIZE      = "32G",
   NETWORK        = "yes"
 ]
