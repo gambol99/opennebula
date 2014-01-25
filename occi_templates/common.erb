@@ -1,0 +1,57 @@
+#
+# This template is processed by the OCCI Server to include specific data for the
+# instance, you should not need to modify the ruby code.
+# You can add common attributes for your cloud templates (e.g. OS)
+#
+
+<% if @vm_info['NAME'] %>
+    NAME   = "<%= @vm_info['NAME'] %>"
+<% end %>
+
+# lets build a content hash, makes it easier for later use
+<% 
+  context = {}
+  if @vm_info.has_elements?('CONTEXT')
+    @vm_info.each('CONTEXT/*') do |cont|
+      context[cont.name] = cont.text
+    end
+  end
+%>
+
+<% @vm_info.each('DISK') do |disk| %>
+    <% if disk.attr('STORAGE','href') %>
+      DISK = [ IMAGE_ID = <%= disk.attr('STORAGE','href').split('/').last %>, CACHE="writeback"
+           ]
+    <% end %>
+<% end %>
+
+<% @vm_info.each('NIC') do |nic| %>
+    <% if nic.attr('NETWORK','href') %>
+      NIC = [ NETWORK_ID = <%= nic.attr('NETWORK','href').split('/').last %>
+          <% if nic['IP'] %>
+              ,IP = <%= nic['IP'] %>
+          <% end %>
+          ]
+    <% end %>
+<% else %>
+NIC=[NETWORK_ID="0",MODEL="virtio"]
+<% end %>
+
+INSTANCE_TYPE = <%= @itype %>
+FEATURES=[PAE="no",ACPI="yes"]
+# lets build the kvm and cluster id
+<%
+  # we could pass the kvm_id as the hostname and use a `call` to onehost command to get the 
+  # host id rather than passing the direct; same with the cluster .. TBD
+  kvm_id     = nil
+  cluster_id = '100'
+  kvm_id     = context['PLACEMENT'] if context['PLACEMENT'] and context['PLACEMENT'] =~ /^[0-9]+/
+  cluster_id = context['CLUSTER']   if context['CLUSTER']   and context['CLUSTER'] =~ /^[0-9]+/
+  requirements = []
+  requirements << "ID=\"%s\"" % [ kvm_id ]              if kvm_id != nil
+  requirements << "CLUSTER_ID=\"%s\"" % [ cluster_id ]  if cluster_id != nil
+%>
+<% if !requirements.empty? %>
+REQUIREMENTS="<%=requirements.join( ' | ')%>"
+<% end %>
+RANK="FREECPU"

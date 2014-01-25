@@ -1,0 +1,30 @@
+#
+#  Virtual Machine Template generated for small instance types. Adjust this
+#  by setting the desired capacity (CPU,MEMORY) or adding specific
+#  attributes for your cloud (e.g. OS).
+#
+
+CPU    = 0.5
+VCPU   = 4
+MEMORY = 4096
+OS=[BOOT="hd",ARCH="x86_64"]
+DISK=[READONLY="no",DRIVER="raw",SIZE="4096",TYPE="swap",DEV_PREFIX=vd]
+GRAPHICS=[LISTEN="0.0.0.0",TYPE="VNC"]
+CONTEXT = [
+<% if @vm_info.has_elements?('CONTEXT') %>
+<% @vm_info.each('CONTEXT/*') do |cont| %>
+    <% if cont.text %>
+<%=cont.name%>  = "<%= cont.text %>",
+    <% end %>
+<% end %>
+<% end %>
+  HOSTNAME       = "$NAME",
+  MANAGE_PUPPET  = "YES",
+  DOMAIN         = "mol.dmgt.net",
+  SELINUX        = "disabled",
+  SEARCH_PATH    = "mol.dmgt.net",
+  SSH_PUBLIC_KEY = "$USER[SSH_PUBLIC_KEY]",
+  DNS            = "$NETWORK[DNS, NAME=\"mol_support\"]",
+  DISK_SIZE      = "32G",
+  NETWORK        = "yes"
+]

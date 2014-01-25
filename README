@@ -13,5 +13,8 @@ The default tm_ssh transport manager uses a scp <image> from controller to compu
 
 The preload.rb performs the above - it has two functions; preload and clone. The preloading looks at the local cached copies of the images and makes x copies for clone to use. The clone takes the image name, looks for a matching preloaded image and moves it to the destination. Preloading uses a single atomic lock, which clone uses a flock per preload image. Note, the clone can also resizes the image if requested
 
+occi_templates
+==============
 
+Contains some of the occi templates we were using for production boxes; I needed the ability to control cluster id and placement (i.e. which kvm to place upon) by hidden it on the CONTEXT section (take a look at common.erb)
 
