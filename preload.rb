@@ -246,7 +246,6 @@ Parser = OptionParser::new do |opts|
 end
 Parser.parse!
 
-# clone: Cloning open301-hsk.mol.dmgt.net:/var/lib/one//datastores/100/c8a6fd348b768536a93ae563b967f0fc in /var/lib/one/datastores/0/69/disk.0
 begin 
     # step: validate the arguments
     unless Operations.include?( @options[:operation] )
